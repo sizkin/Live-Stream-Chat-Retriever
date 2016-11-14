@@ -22,6 +22,8 @@ var _newMessages = [];
 var _liveBroadcastPollingStarted = false;
 var _messagePollingStarted = false;
 var _noLiveBroadcastFound = false;
+var _lineOfMessage = 0;
+var _maxLineOfMessage = 5;
 
 function getRandomColor() {
     var letters = '0123456789ABCDEF'.split('');
@@ -247,6 +249,7 @@ function getChatMessages() {
                         };
 
                         chatMessages.push(chatMessage);
+                        saveMessage(chatMessage);
                     }
                 }
             }
@@ -272,6 +275,15 @@ function startMessagePolling() {
         _messagePollingStarted = true;
         setInterval(getChatMessages, 1000);
     }
+}
+
+function saveMessage(chatMessage) {
+    if ( _lineOfMessage >= _maxLineOfMessage ) {
+        _lineOfMessage = 0;
+        fs.writeFile('./output/' + _liveChatId + '-message.txt', "");
+    }
+    fs.appendFileSync('./output/' + _liveChatId + '-message.txt', chatMessage.author + ":" + chatMessage.message  +"\n");
+    _lineOfMessage++;
 }
 
 exports.initialize = initialize;
